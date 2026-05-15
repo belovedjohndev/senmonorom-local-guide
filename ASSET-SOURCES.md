@@ -9,13 +9,20 @@
 - License status on source page: released into the public domain by the copyright holder
 - Accessed for this project: `2026-05-08`
 
+## Current site artwork
+
+- `public/brand/logo.png`
+- `public/favicon.ico`
+
+These brand assets were added from the owner-provided logo image file `ChatGPT Image May 15, 2026, 04_37_31 PM.png` on `2026-05-15`.
+
 ## Original project artwork
 
 - `public/brand/logo.svg`
 - `public/brand/logo-mark.svg`
 - `public/favicon.svg`
 
-These SVG brand assets were created for this project inside the repository and do not depend on third-party logo artwork.
+These SVG brand assets were created for this project inside the repository and are retained as unused originals.
 
 ## Owner-provided business assets
 
