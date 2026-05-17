@@ -1,5 +1,10 @@
 ---
-import { categoryLabels, hasExternalFacebookUrl, type BusinessListing } from "../data/businessListings";
+import {
+  categoryLabels,
+  getTelHref,
+  hasExternalUrl,
+  type BusinessListing
+} from "../data/businessListings";
 
 type Props = {
   listing: BusinessListing;
@@ -19,6 +24,17 @@ const listingInitials = listing.name
   .slice(0, 2)
   .map((word) => word[0]?.toUpperCase() ?? "")
   .join("");
+
+const badgeText =
+  listing.verificationStatus === "verified" ? "Owner-confirmed" : "Needs verification";
+const formattedVerifiedAt =
+  listing.verificationStatus === "verified" && listing.verifiedAt
+    ? formatter.format(new Date(`${listing.verifiedAt}T00:00:00Z`))
+    : null;
+const hasGoogleMapsUrl = hasExternalUrl(listing.googleMapsUrl);
+const hasWebsiteUrl = hasExternalUrl(listing.websiteUrl);
+const hasFacebookUrl = hasExternalUrl(listing.facebookUrl);
+const hasActions = hasGoogleMapsUrl || listing.phone || hasWebsiteUrl || hasFacebookUrl;
 ---
 
 <article class="listing-card">
@@ -57,7 +73,9 @@ const listingInitials = listing.name
       </div>
     </div>
     <div class="badge-row">
-      <span class="badge badge-verified">Verified</span>
+      <span class={`badge ${listing.verificationStatus === "verified" ? "badge-verified" : "badge-pending"}`}>
+        {badgeText}
+      </span>
     </div>
   </div>
 
@@ -78,23 +96,35 @@ const listingInitials = listing.name
     <li>
       <span class="meta-label">Location:</span> {listing.locationLabel}
     </li>
-    <li>
-      <span class="meta-label">Owner-confirmed:</span>{" "}
-      {formatter.format(new Date(`${listing.verifiedAt}T00:00:00Z`))}
-    </li>
+    {formattedVerifiedAt && (
+      <li>
+        <span class="meta-label">Owner-confirmed:</span> {formattedVerifiedAt}
+      </li>
+    )}
   </ul>
 
-  <div class="button-row">
-    <a class="button" href={listing.googleMapsUrl} target="_blank" rel="noreferrer">
-      Open in Google Maps
-    </a>
-    <a class="button-secondary" href="tel:0882472112">
-      Call now
-    </a>
-    {hasExternalFacebookUrl(listing.facebookUrl) && (
-      <a class="button-secondary" href={listing.facebookUrl} target="_blank" rel="noreferrer">
-        View Facebook Page
-      </a>
-    )}
-  </div>
+  {hasActions && (
+    <div class="button-row">
+      {hasGoogleMapsUrl && (
+        <a class="button" href={listing.googleMapsUrl} target="_blank" rel="noreferrer">
+          Open in Google Maps
+        </a>
+      )}
+      {listing.phone && (
+        <a class="button-secondary" href={getTelHref(listing.phone)}>
+          Call now
+        </a>
+      )}
+      {hasWebsiteUrl && (
+        <a class="button-secondary" href={listing.websiteUrl} target="_blank" rel="noreferrer">
+          Visit Website
+        </a>
+      )}
+      {hasFacebookUrl && (
+        <a class="button-secondary" href={listing.facebookUrl} target="_blank" rel="noreferrer">
+          View Facebook Page
+        </a>
+      )}
+    </div>
+  )}
 </article>

@@ -1,5 +1,9 @@
 ---
+import BusinessListingCard from "../components/BusinessListingCard.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getListingsByCategory } from "../data/businessListings";
+
+const listings = getListingsByCategory("tour");
 ---
 
 <BaseLayout
@@ -16,17 +20,25 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         </p>
       </div>
 
-      <div class="empty-state">
-        <h2>Listings are being verified</h2>
-        <p>Tour listings are being verified. Local owners can submit details for a free listing.</p>
-        <p>
-          Know a local business that should be listed? Send us the business name or Facebook page and
-          we will verify it.
-        </p>
-        <div class="button-row">
-          <a class="button" href="/submit-business">Submit a business</a>
-        </div>
-      </div>
+      {
+        listings.length > 0 ? (
+          <div class="grid listing-grid">
+            {listings.map((listing) => <BusinessListingCard listing={listing} headingTag="h2" />)}
+          </div>
+        ) : (
+          <div class="empty-state">
+            <h2>Listings are being verified</h2>
+            <p>Listings are being verified. Local owners can submit details for a free listing.</p>
+            <p>
+              Know a local business that should be listed? Send us the business name or Facebook page and
+              we will verify it.
+            </p>
+            <div class="button-row">
+              <a class="button" href="/submit-business">Submit a business</a>
+            </div>
+          </div>
+        )
+      }
     </div>
   </section>
 </BaseLayout>
