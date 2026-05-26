@@ -122,6 +122,16 @@ export function getTelHref(phone: string): string {
   return `tel:${prefix}${digits}`;
 }
 
+export function getWhatsAppHref(phone: string): string {
+  let digits = phone.replace(/\D/g, "");
+
+  if (digits.startsWith("0")) {
+    digits = `855${digits.slice(1)}`;
+  }
+
+  return `https://wa.me/${digits}`;
+}
+
 function sortByVerifiedAtDescending(listings: BusinessListing[]): BusinessListing[] {
   return [...listings].sort((a, b) => {
     const aTime = a.verifiedAt ? Date.parse(`${a.verifiedAt}T00:00:00Z`) : 0;

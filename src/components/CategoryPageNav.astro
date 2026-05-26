@@ -1,0 +1,49 @@
+---
+import {
+  getListingsByCategory,
+  type BusinessCategory
+} from "../data/businessListings";
+
+type Props = {
+  activeCategory: BusinessCategory;
+};
+
+const { activeCategory } = Astro.props as Props;
+
+const categoryItems: {
+  category: BusinessCategory;
+  href: string;
+  label: string;
+}[] = [
+  { category: "cafe", href: "/cafes", label: "Cafes" },
+  { category: "restaurant", href: "/restaurants", label: "Restaurants" },
+  { category: "guesthouse", href: "/guesthouses", label: "Guesthouses" },
+  { category: "tour", href: "/tours", label: "Tours" },
+  { category: "motorbike-rental", href: "/motorbike-rentals", label: "Motorbike Rentals" }
+];
+---
+
+<nav class="category-page-nav" aria-label="Browse listing categories">
+  <a class="category-page-nav-link" href="/#verified-listings">All verified</a>
+  {
+    categoryItems.map((item) => {
+      const count = getListingsByCategory(item.category).length;
+      const isActive = activeCategory === item.category;
+      const isEmpty = count === 0;
+
+      return (
+        <a
+          class={`category-page-nav-link ${isActive ? "is-active" : ""} ${
+            isEmpty ? "is-empty" : ""
+          }`}
+          href={item.href}
+          aria-current={isActive ? "page" : undefined}
+          aria-label={`${item.label}, ${count} verified ${count === 1 ? "listing" : "listings"}`}
+        >
+          <span>{item.label}</span>
+          <span class="category-page-nav-count">{count}</span>
+        </a>
+      );
+    })
+  }
+</nav>

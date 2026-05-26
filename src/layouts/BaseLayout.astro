@@ -1,14 +1,37 @@
 ---
+import { getListingsByCategory, type BusinessCategory } from "../data/businessListings";
 import "../styles/global.css";
 
 type Props = {
   title: string;
   description: string;
+  image?: string;
+  imageAlt?: string;
 };
 
-const { title, description } = Astro.props as Props;
+const {
+  title,
+  description,
+  image = "/images/hero-mondulkiri-waterfall.jpg",
+  imageAlt = "Chrey Thom Waterfall in Mondulkiri"
+} = Astro.props as Props;
 const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : null;
+const socialImageUrl = Astro.site ? new URL(image, Astro.site).toString() : image;
 const siteTitle = "Sen Monorom Local Guide";
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+
+const navItems: {
+  href: string;
+  label: string;
+  category?: BusinessCategory;
+}[] = [
+  { href: "/cafes", label: "Cafes", category: "cafe" },
+  { href: "/restaurants", label: "Restaurants", category: "restaurant" },
+  { href: "/guesthouses", label: "Guesthouses", category: "guesthouse" },
+  { href: "/tours", label: "Tours", category: "tour" },
+  { href: "/motorbike-rentals", label: "Motorbike Rentals", category: "motorbike-rental" },
+  { href: "/submit-business", label: "Submit Business" }
+];
 ---
 
 <!doctype html>
@@ -20,6 +43,18 @@ const siteTitle = "Sen Monorom Local Guide";
     <meta name="description" content={description} />
     <meta name="theme-color" content="#234e38" />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <meta property="og:site_name" content={siteTitle} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+    <meta name="twitter:image:alt" content={imageAlt} />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <meta name="generator" content={Astro.generator} />
   </head>
@@ -27,19 +62,46 @@ const siteTitle = "Sen Monorom Local Guide";
     <header class="site-header">
       <div class="container header-inner">
         <a class="site-brand" href="/" aria-label={siteTitle}>
-          <img class="site-brand-mark" src="/brand/logo.png" alt="" width="44" height="44" />
+          <picture class="site-brand-mark">
+            <source srcset="/brand/logo.webp" type="image/webp" />
+            <img src="/brand/logo.png" alt="" width="44" height="44" />
+          </picture>
           <span class="site-brand-text">
             <span class="site-brand-title">Sen Monorom</span>
             <span class="site-brand-subtitle">Local Guide</span>
           </span>
         </a>
         <nav aria-label="Primary navigation" class="site-nav">
-          <a href="/cafes">Cafes</a>
-          <a href="/restaurants">Restaurants</a>
-          <a href="/guesthouses">Guesthouses</a>
-          <a href="/tours">Tours</a>
-          <a href="/motorbike-rentals">Motorbike Rentals</a>
-          <a href="/submit-business">Submit Business</a>
+          {
+            navItems.map((item) => {
+              const count = item.category ? getListingsByCategory(item.category).length : null;
+              const isEmptyCategory = count === 0;
+              const itemPath = item.href.replace(/\/$/, "") || "/";
+              const isActive = currentPath === itemPath;
+              const ariaLabel =
+                count === null
+                  ? item.label
+                  : `${item.label}, ${count} verified ${count === 1 ? "listing" : "listings"}`;
+
+              return (
+                <a
+                  class={`site-nav-link ${isActive ? "site-nav-link-active" : ""} ${
+                    isEmptyCategory ? "site-nav-link-empty" : ""
+                  }`}
+                  href={item.href}
+                  aria-current={isActive ? "page" : undefined}
+                  aria-label={ariaLabel}
+                >
+                  <span>{item.label}</span>
+                  {count !== null && (
+                    <span class={`nav-count ${isEmptyCategory ? "nav-count-empty" : ""}`}>
+                      {count}
+                    </span>
+                  )}
+                </a>
+              );
+            })
+          }
         </nav>
       </div>
     </header>

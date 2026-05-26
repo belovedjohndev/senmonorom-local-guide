@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const contactPhone = "+855 96 388 5424";
 const contactPhoneDigits = "855963885424";
 const contactEmail = "john@belovedjohndev.com";
 const whatsappUrl = `https://wa.me/${contactPhoneDigits}`;
@@ -30,10 +29,10 @@ const emailUrl = `mailto:${contactEmail}?subject=Sen%20Monorom%20Local%20Guide%2
           <li>Business name</li>
           <li>Category</li>
           <li>Google Maps location</li>
-          <li>Phone number</li>
-          <li>Facebook page or website</li>
+          <li>Phone number/WhatsApp/Telegram</li>
+          <li>Facebook page and website if available</li>
           <li>Opening hours</li>
-          <li>Photos if available</li>
+          <li>Photos and logo if available</li>
         </ul>
       </div>
     </div>
@@ -43,9 +42,6 @@ const emailUrl = `mailto:${contactEmail}?subject=Sen%20Monorom%20Local%20Guide%2
     <div class="container">
       <div class="cta-panel">
         <h2>Message John to submit your business details.</h2>
-        <p>
-          Send the details by Telegram or WhatsApp at {contactPhone}, or email {contactEmail}.
-        </p>
         <div class="button-row contact-actions">
           <a class="button" href={whatsappUrl}>WhatsApp</a>
           <a class="button-secondary" href={telegramUrl}>Telegram</a>

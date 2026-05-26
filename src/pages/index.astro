@@ -1,48 +1,114 @@
 ---
 import BusinessListingCard from "../components/BusinessListingCard.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getVerifiedListings } from "../data/businessListings";
+import {
+  categoryLabels,
+  getListingsByCategory,
+  getVerifiedListings,
+  type BusinessCategory,
+  type BusinessListing
+} from "../data/businessListings";
 
 const verifiedListings = getVerifiedListings();
+const verifiedListingCountLabel =
+  verifiedListings.length === 1
+    ? "1 owner-confirmed place"
+    : `${verifiedListings.length} owner-confirmed places`;
+
+const directoryFilters: {
+  id: "all" | "eat" | "tours" | "stay" | "services";
+  label: string;
+  categories: BusinessCategory[];
+}[] = [
+  { id: "all", label: "All", categories: [] },
+  { id: "eat", label: "Eat", categories: ["restaurant", "cafe"] },
+  { id: "tours", label: "Tours", categories: ["tour"] },
+  { id: "stay", label: "Stay", categories: ["guesthouse"] },
+  { id: "services", label: "Services", categories: ["motorbike-rental", "local-product"] }
+];
+
+const directoryFiltersWithCounts = directoryFilters.map((filter) => {
+  const count =
+    filter.id === "all"
+      ? verifiedListings.length
+      : verifiedListings.filter((listing) =>
+          listing.category.some((category) => filter.categories.includes(category))
+        ).length;
+
+  return {
+    ...filter,
+    count,
+    isEmpty: filter.id !== "all" && count === 0
+  };
+});
+
+function getDirectoryGroups(listing: BusinessListing): string[] {
+  return directoryFiltersWithCounts
+    .filter((filter) => filter.id !== "all")
+    .filter((filter) => listing.category.some((category) => filter.categories.includes(category)))
+    .map((filter) => filter.id);
+}
+
+function getDirectorySearchText(listing: BusinessListing): string {
+  return [
+    listing.name,
+    listing.description,
+    listing.locationLabel,
+    ...listing.category,
+    ...listing.category.map((category) => categoryLabels[category]),
+    ...listing.tags
+  ]
+    .join(" ")
+    .toLowerCase();
+}
 
 const categoryCards = [
   {
     title: "Cafes",
     href: "/cafes",
+    category: "cafe",
     description: "See the first verified listings for cafes and bakery stops in Sen Monorom.",
     ctaLabel: "Browse cafes"
   },
   {
     title: "Restaurants",
     href: "/restaurants",
+    category: "restaurant",
     description: "Browse owner-confirmed places for meals, coffee, and practical tourist stops.",
     ctaLabel: "Browse restaurants"
   },
   {
     title: "Guesthouses",
     href: "/guesthouses",
+    category: "guesthouse",
     description: "Guesthouse listings are being verified and will be added carefully over time.",
-    ctaLabel: "View guesthouse updates"
+    ctaLabel: "Suggest a guesthouse"
   },
   {
     title: "Tours",
     href: "/tours",
+    category: "tour",
     description: "Browse owner-confirmed local tour services added through direct verification.",
     ctaLabel: "Browse tours"
   },
   {
     title: "Motorbike Rentals",
     href: "/motorbike-rentals",
+    category: "motorbike-rental",
     description: "Motorbike rental details are being verified to keep information practical and reliable.",
-    ctaLabel: "View rental updates"
-  },
-  {
-    title: "Submit Business",
-    href: "/submit-business",
-    description: "Local owners can request a free listing by sharing owner-confirmed business details.",
-    ctaLabel: "Submit free listing"
+    ctaLabel: "Suggest a rental"
   }
-];
+].map((card) => {
+  const count = "category" in card ? getListingsByCategory(card.category as BusinessCategory).length : null;
+  const statusLabel =
+    count === null ? "" : count === 0 ? "Coming soon" : `${count} verified`;
+
+  return {
+    ...card,
+    count,
+    statusLabel
+  };
+});
 ---
 
 <BaseLayout
@@ -56,7 +122,12 @@ const categoryCards = [
           class="hero-media"
           role="img"
           aria-label="Chrey Thom Waterfall in Mondulkiri used as the homepage background"
-        ></div>
+        >
+          <picture class="hero-picture" aria-hidden="true">
+            <source srcset="/images/hero-mondulkiri-waterfall.webp" type="image/webp" />
+            <img src="/images/hero-mondulkiri-waterfall.jpg" alt="" />
+          </picture>
+        </div>
         <div class="hero-content">
           <div class="eyebrow hero-eyebrow">Owner-confirmed listings now being added</div>
           <h1 class="hero-title">Sen Monorom Local Guide</h1>
@@ -69,7 +140,6 @@ const categoryCards = [
           </p>
           <div class="button-row hero-actions">
             <a class="button" href="#verified-listings">Browse verified listings</a>
-            <a class="button-secondary hero-button-outline" href="/submit-business">Submit a business</a>
           </div>
         </div>
       </div>
@@ -88,9 +158,14 @@ const categoryCards = [
       <div class="grid category-grid">
         {
           categoryCards.map((card) => (
-            <a class="category-card" href={card.href}>
+            <a class={`category-card ${card.count === 0 ? "category-card-empty" : ""}`} href={card.href}>
               <div>
-                <h3>{card.title}</h3>
+                <div class="category-card-header">
+                  <h3>{card.title}</h3>
+                  <span class={`category-status ${card.count === 0 ? "category-status-empty" : ""}`}>
+                    {card.statusLabel}
+                  </span>
+                </div>
                 <p>{card.description}</p>
               </div>
               <span class="card-link">{card.ctaLabel}</span>
@@ -101,28 +176,8 @@ const categoryCards = [
     </div>
   </section>
 
-  <section>
-    <div class="container">
-      <div class="content-panel trust-panel">
-        <div class="section-heading">
-          <h2>Why this guide is verified</h2>
-          <p>
-            We are building this guide from owner-confirmed details and field verification, not copied
-            directory data. Listings are added carefully so tourists can find active local businesses
-            in Sen Monorom.
-          </p>
-        </div>
-        <div class="trust-points" aria-label="Verification approach">
-          <div class="trust-point">Owner-confirmed details</div>
-          <div class="trust-point">Local field verification</div>
-          <div class="trust-point">Free listing for local businesses</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section id="verified-listings">
-    <div class="container">
+    <div class="container" data-directory>
       <div class="section-heading">
         <h2>Verified listings</h2>
         <p>
@@ -130,8 +185,63 @@ const categoryCards = [
           details.
         </p>
       </div>
-      <div class="grid listing-grid">
-        {verifiedListings.map((listing) => <BusinessListingCard listing={listing} headingTag="h3" />)}
+
+      <div class="directory-controls" aria-label="Filter verified listings">
+        <div class="directory-search">
+          <label for="directory-search-input">Search verified places</label>
+          <input
+            id="directory-search-input"
+            type="search"
+            placeholder="Search by name, food, tour, place..."
+            autocomplete="off"
+            data-directory-search
+          />
+        </div>
+
+        <div class="directory-filter-row" role="group" aria-label="Listing category filters">
+          {
+            directoryFiltersWithCounts.map((filter) => (
+              <button
+                class={`filter-pill ${filter.id === "all" ? "is-active" : ""} ${
+                  filter.isEmpty ? "filter-pill-empty" : ""
+                }`}
+                type="button"
+                data-directory-filter={filter.id}
+                aria-pressed={filter.id === "all" ? "true" : "false"}
+              >
+                <span>{filter.label}</span>
+                <span class="filter-count" aria-label={`${filter.count} verified listings`}>
+                  {filter.count}
+                </span>
+              </button>
+            ))
+          }
+        </div>
+
+        <p class="result-count" aria-live="polite" data-directory-count>{verifiedListingCountLabel}</p>
+      </div>
+
+      <div class="grid listing-grid directory-listing-grid">
+        {
+          verifiedListings.map((listing) => (
+            <div
+              class="directory-listing-item"
+              data-directory-item
+              data-category-groups={getDirectoryGroups(listing).join(" ")}
+              data-search-text={getDirectorySearchText(listing)}
+            >
+              <BusinessListingCard listing={listing} headingTag="h3" />
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="empty-state directory-empty-state" data-directory-empty hidden>
+        <h2>No verified places found.</h2>
+        <p>Know a good Sen Monorom business? Suggest it for verification.</p>
+        <div class="button-row">
+          <a class="button" href="/submit-business">Suggest one</a>
+        </div>
       </div>
     </div>
   </section>
@@ -145,4 +255,110 @@ const categoryCards = [
       </div>
     </div>
   </section>
+
+  <script is:inline>
+    (() => {
+      const root = document.querySelector("[data-directory]");
+
+      if (!root) {
+        return;
+      }
+
+      const filterButtons = Array.from(root.querySelectorAll("[data-directory-filter]"));
+      const searchInput = root.querySelector("[data-directory-search]");
+      const listingItems = Array.from(root.querySelectorAll("[data-directory-item]"));
+      const resultCount = root.querySelector("[data-directory-count]");
+      const emptyState = root.querySelector("[data-directory-empty]");
+      const validCategories = new Set(["all", "eat", "tours", "stay", "services"]);
+
+      if (!searchInput || !resultCount || !emptyState) {
+        return;
+      }
+
+      const url = new URL(window.location.href);
+      let activeCategory = url.searchParams.get("category") || "all";
+
+      if (!validCategories.has(activeCategory)) {
+        activeCategory = "all";
+      }
+
+      searchInput.value = url.searchParams.get("q") || "";
+
+      function getCountLabel(count) {
+        if (count === 0) {
+          return "No owner-confirmed places found";
+        }
+
+        if (count === 1) {
+          return "1 owner-confirmed place";
+        }
+
+        return `${count} owner-confirmed places`;
+      }
+
+      function updateUrl() {
+        const nextUrl = new URL(window.location.href);
+        const query = searchInput.value.trim();
+
+        if (activeCategory === "all") {
+          nextUrl.searchParams.delete("category");
+        } else {
+          nextUrl.searchParams.set("category", activeCategory);
+        }
+
+        if (query) {
+          nextUrl.searchParams.set("q", query);
+        } else {
+          nextUrl.searchParams.delete("q");
+        }
+
+        window.history.replaceState({}, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
+      }
+
+      function renderDirectory({ syncUrl = true } = {}) {
+        const query = searchInput.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        filterButtons.forEach((button) => {
+          const isActive = button.dataset.directoryFilter === activeCategory;
+          button.classList.toggle("is-active", isActive);
+          button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
+
+        listingItems.forEach((item) => {
+          const groups = (item.dataset.categoryGroups || "").split(/\s+/).filter(Boolean);
+          const searchText = item.dataset.searchText || "";
+          const categoryMatches = activeCategory === "all" || groups.includes(activeCategory);
+          const searchMatches = query === "" || searchText.includes(query);
+          const isVisible = categoryMatches && searchMatches;
+
+          item.hidden = !isVisible;
+
+          if (isVisible) {
+            visibleCount += 1;
+          }
+        });
+
+        resultCount.textContent = getCountLabel(visibleCount);
+        emptyState.hidden = visibleCount !== 0;
+
+        if (syncUrl) {
+          updateUrl();
+        }
+      }
+
+      filterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          activeCategory = button.dataset.directoryFilter || "all";
+          renderDirectory();
+        });
+      });
+
+      searchInput.addEventListener("input", () => {
+        renderDirectory();
+      });
+
+      renderDirectory({ syncUrl: false });
+    })();
+  </script>
 </BaseLayout>

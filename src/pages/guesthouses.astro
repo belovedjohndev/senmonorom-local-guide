@@ -1,4 +1,5 @@
 ---
+import CategoryPageNav from "../components/CategoryPageNav.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
@@ -10,21 +11,27 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <div class="container">
       <div class="content-panel page-header">
         <h1>Guesthouses</h1>
+        <p class="page-count">0 verified listings</p>
         <p>
           This section will grow slowly as owner-confirmed details are collected and checked for
           accuracy.
         </p>
       </div>
 
+      <CategoryPageNav activeCategory="guesthouse" />
+
       <div class="empty-state">
-        <h2>Listings are being verified</h2>
-        <p>Listings are being verified. Local owners can submit details for a free listing.</p>
+        <h2>No verified guesthouses yet</h2>
         <p>
-          Know a local business that should be listed? Send us the business name or Facebook page and
-          we will verify it.
+          Guesthouse details are being checked before publication so visitors do not rely on outdated
+          booking or contact information.
+        </p>
+        <p>
+          Know a reliable guesthouse in Sen Monorom? Submit it and we will verify the details.
         </p>
         <div class="button-row">
-          <a class="button" href="/submit-business">Submit a business</a>
+          <a class="button-secondary" href="/#verified-listings">Browse all verified listings</a>
+          <a class="button" href="/submit-business">Suggest a guesthouse</a>
         </div>
       </div>
     </div>

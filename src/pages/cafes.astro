@@ -1,9 +1,11 @@
 ---
 import BusinessListingCard from "../components/BusinessListingCard.astro";
+import CategoryPageNav from "../components/CategoryPageNav.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getListingsByCategory } from "../data/businessListings";
 
 const listings = getListingsByCategory("cafe");
+const listingCountLabel = listings.length === 1 ? "1 verified listing" : `${listings.length} verified listings`;
 ---
 
 <BaseLayout
@@ -14,11 +16,14 @@ const listings = getListingsByCategory("cafe");
     <div class="container">
       <div class="content-panel page-header">
         <h1>Cafes</h1>
+        <p class="page-count">{listingCountLabel}</p>
         <p>
           These cafe listings are being published carefully using owner-confirmed details and direct
           verification.
         </p>
       </div>
+
+      <CategoryPageNav activeCategory="cafe" />
 
       <div class="grid listing-grid">
         {listings.map((listing) => <BusinessListingCard listing={listing} headingTag="h2" />)}
