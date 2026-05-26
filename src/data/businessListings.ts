@@ -79,7 +79,7 @@ export const businessListings: BusinessListing[] = [
     phone: "+855 88 593 5588",
     photoUrl: "/images/businesses/mondulkiri-tour-guide-cover.jpg",
     photoAlt: "Tour group visiting a Mondulkiri waterfall with Mondulkiri Tour Guide",
-    logoUrl: "/images/businesses/mondulkiri-tour-guide-logo.png",
+    logoUrl: "/images/businesses/mondulkiri-tour-guide-logo.webp",
     verifiedAt: "2026-05-17",
     verificationStatus: "verified",
     source: "direct-owner-message",
