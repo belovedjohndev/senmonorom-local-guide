@@ -1,5 +1,6 @@
 ---
-import { getListingsByCategory, type BusinessCategory } from "../data/businessListings";
+import Footer from "../components/site/Footer.astro";
+import Header from "../components/site/Header.astro";
 import "../styles/global.css";
 
 type Props = {
@@ -19,19 +20,6 @@ const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toStri
 const socialImageUrl = Astro.site ? new URL(image, Astro.site).toString() : image;
 const siteTitle = "Sen Monorom Local Guide";
 const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
-
-const navItems: {
-  href: string;
-  label: string;
-  category?: BusinessCategory;
-}[] = [
-  { href: "/cafes", label: "Cafes", category: "cafe" },
-  { href: "/restaurants", label: "Restaurants", category: "restaurant" },
-  { href: "/guesthouses", label: "Guesthouses", category: "guesthouse" },
-  { href: "/tours", label: "Tours", category: "tour" },
-  { href: "/motorbike-rentals", label: "Motorbike Rentals", category: "motorbike-rental" },
-  { href: "/submit-business", label: "Submit Business" }
-];
 ---
 
 <!doctype html>
@@ -59,68 +47,12 @@ const navItems: {
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
-    <header class="site-header">
-      <div class="container header-inner">
-        <a class="site-brand" href="/" aria-label={siteTitle}>
-          <picture class="site-brand-mark">
-            <source srcset="/brand/logo.webp" type="image/webp" />
-            <img src="/brand/logo.png" alt="" width="44" height="44" />
-          </picture>
-          <span class="site-brand-text">
-            <span class="site-brand-title">Sen Monorom</span>
-            <span class="site-brand-subtitle">Local Guide</span>
-          </span>
-        </a>
-        <nav aria-label="Primary navigation" class="site-nav">
-          {
-            navItems.map((item) => {
-              const count = item.category ? getListingsByCategory(item.category).length : null;
-              const isEmptyCategory = count === 0;
-              const itemPath = item.href.replace(/\/$/, "") || "/";
-              const isActive = currentPath === itemPath;
-              const ariaLabel =
-                count === null
-                  ? item.label
-                  : `${item.label}, ${count} verified ${count === 1 ? "listing" : "listings"}`;
-
-              return (
-                <a
-                  class={`site-nav-link ${isActive ? "site-nav-link-active" : ""} ${
-                    isEmptyCategory ? "site-nav-link-empty" : ""
-                  }`}
-                  href={item.href}
-                  aria-current={isActive ? "page" : undefined}
-                  aria-label={ariaLabel}
-                >
-                  <span>{item.label}</span>
-                  {count !== null && (
-                    <span class={`nav-count ${isEmptyCategory ? "nav-count-empty" : ""}`}>
-                      {count}
-                    </span>
-                  )}
-                </a>
-              );
-            })
-          }
-        </nav>
-      </div>
-    </header>
+    <Header currentPath={currentPath} siteTitle={siteTitle} />
 
     <main>
       <slot />
     </main>
 
-    <footer class="site-footer">
-      <div class="container footer-inner">
-        <p>{siteTitle} is being built carefully with owner-confirmed details and field verification.</p>
-        <p>
-          <a class="footer-link" href="/submit-business">
-            Own a business in Sen Monorom? Submit your details for a free listing.
-          </a>
-        </p>
-        <p>Last updated: May 17, 2026</p>
-        <p>Business details may change. Please contact the business directly before visiting, booking, or traveling.</p>
-      </div>
-    </footer>
+    <Footer siteTitle={siteTitle} />
   </body>
 </html>

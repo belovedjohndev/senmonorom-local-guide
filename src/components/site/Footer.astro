@@ -1,0 +1,47 @@
+---
+type Props = {
+  siteTitle: string;
+};
+
+const { siteTitle } = Astro.props as Props;
+
+const footerLinks = [
+  { href: "/cafes", label: "Cafes" },
+  { href: "/restaurants", label: "Restaurants" },
+  { href: "/guesthouses", label: "Guesthouses" },
+  { href: "/tours", label: "Tours" },
+  { href: "/motorbike-rentals", label: "Motorbike Rentals" },
+  { href: "/submit-business", label: "Submit Business" }
+];
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <a class="site-brand footer-site-brand" href="/" aria-label={siteTitle}>
+        <picture class="site-brand-mark">
+          <source srcset="/brand/logo.webp" type="image/webp" />
+          <img src="/brand/logo.png" alt="" width="44" height="44" />
+        </picture>
+        <span class="site-brand-text">
+          <span class="site-brand-title">Sen Monorom</span>
+          <span class="site-brand-subtitle">Local Guide</span>
+        </span>
+      </a>
+      <p>
+        Focused only on Sen Monorom, Mondulkiri. A practical local guide for verified cafes,
+        restaurants, guesthouses, tours, motorbike rentals, and local services.
+      </p>
+    </div>
+
+    <nav class="footer-nav" aria-label="Footer navigation">
+      {footerLinks.map((link) => <a class="footer-link" href={link.href}>{link.label}</a>)}
+    </nav>
+
+    <div class="footer-fine-print">
+      <p>Business details may change. Contact businesses directly before visiting, booking, or traveling.</p>
+      <p>{siteTitle} is being built carefully with owner-confirmed details and field verification.</p>
+      <p>Last updated: May 17, 2026</p>
+    </div>
+  </div>
+</footer>

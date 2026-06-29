@@ -1,0 +1,43 @@
+---
+const trustPoints = [
+  {
+    title: "Confirmed with owners",
+    description: "Owners provide or confirm key business details before publishing.",
+    icon:
+      '<svg viewBox="0 0 24 24" focusable="false"><path d="M12 3.5 19 6v5.2c0 4.35-2.85 7.75-7 9.3-4.15-1.55-7-4.95-7-9.3V6l7-2.5Z"/><path d="m8.7 12.1 2.1 2.1 4.7-5"/></svg>'
+  },
+  {
+    title: "Checked locally when possible",
+    description: "Listings are checked locally when possible instead of copied from random directories.",
+    icon:
+      '<svg viewBox="0 0 24 24" focusable="false"><path d="M20 10.5c0 5.5-8 10-8 10s-8-4.5-8-10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10.5" r="2.5"/></svg>'
+  },
+  {
+    title: "Built for direct contact",
+    description: "Visitors can use maps, phone, WhatsApp, Facebook, or website links when available.",
+    icon:
+      '<svg viewBox="0 0 24 24" focusable="false"><path d="M7.5 4.5 10 7 8.5 9.5c1.3 2.65 3.35 4.7 6 6L17 14l2.5 2.5-1 3c-.25.75-1 1.2-1.8 1.05C9.6 19.3 4.7 14.4 3.45 7.3 3.3 6.5 3.75 5.75 4.5 5.5l3-1Z"/></svg>'
+  }
+];
+---
+
+<section>
+  <div class="container">
+    <div class="section-heading section-heading-centered">
+      <h2>How this guide builds trust</h2>
+      <p>Listings are published only when the details can be checked or confirmed.</p>
+    </div>
+
+    <div class="trust-grid">
+      {
+        trustPoints.map((point) => (
+          <article class="trust-card">
+            <span class="trust-icon" aria-hidden="true" set:html={point.icon}></span>
+            <h3>{point.title}</h3>
+            <p>{point.description}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

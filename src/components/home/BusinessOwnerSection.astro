@@ -1,0 +1,42 @@
+---
+const checklist = [
+  "Business name",
+  "Category",
+  "Google Maps location",
+  "Phone / WhatsApp / Telegram",
+  "Facebook page or website",
+  "Opening hours",
+  "Photos and logo if available"
+];
+---
+
+<section id="submit">
+  <div class="container owner-section-grid">
+    <div>
+      <div class="section-heading">
+        <h2>Own a business in Sen Monorom?</h2>
+        <p class="owner-benefit">
+          Get a free local listing visitors can use to find your location, hours, and contact links.
+        </p>
+        <p>
+          Submit your cafe, restaurant, guesthouse, tour service, motorbike rental, or local
+          service for a free listing. Listings are reviewed before publishing.
+        </p>
+      </div>
+
+      <h3 class="checklist-title">What to include</h3>
+      <ul class="owner-checklist">
+        {checklist.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+
+    <aside class="owner-cta-card">
+      <h3>Free local listing</h3>
+      <p>Get your business shown with location, hours, photos, and contact links.</p>
+      <p>Reviewed before publishing.</p>
+      <p>No payment required for the first listing.</p>
+      <a class="button" href="/submit-business">Submit your business</a>
+      <p class="owner-cta-note">Free for local businesses in Sen Monorom.</p>
+    </aside>
+  </div>
+</section>

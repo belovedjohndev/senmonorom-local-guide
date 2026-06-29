@@ -1,0 +1,104 @@
+---
+import { getListingsByCategory, type BusinessCategory } from "../../data/businessListings";
+
+type CategoryCardInput = {
+  title: string;
+  href: string;
+  category?: BusinessCategory;
+  description: string;
+  ctaLabel: string;
+  statusKind?: "free";
+};
+
+const categoryCardInputs: CategoryCardInput[] = [
+  {
+    title: "Cafes",
+    href: "/cafes",
+    category: "cafe",
+    description: "Coffee, bakery stops, and relaxed places to sit.",
+    ctaLabel: "Explore cafes"
+  },
+  {
+    title: "Restaurants",
+    href: "/restaurants",
+    category: "restaurant",
+    description: "Owner-confirmed places for meals and practical tourist stops.",
+    ctaLabel: "View restaurants"
+  },
+  {
+    title: "Guesthouses",
+    href: "/guesthouses",
+    category: "guesthouse",
+    description: "Guesthouse listings are being verified carefully before publishing.",
+    ctaLabel: "Suggest a guesthouse"
+  },
+  {
+    title: "Tours",
+    href: "/tours",
+    category: "tour",
+    description: "Local tour operators and activities verified before listing.",
+    ctaLabel: "See tour operators"
+  },
+  {
+    title: "Motorbike Rentals",
+    href: "/motorbike-rentals",
+    category: "motorbike-rental",
+    description: "Rental details are checked so visitors can contact active operators.",
+    ctaLabel: "Suggest a rental"
+  },
+  {
+    title: "Submit Business",
+    href: "/submit-business",
+    description: "Local owners can request a free listing with confirmed details.",
+    ctaLabel: "Submit free listing",
+    statusKind: "free"
+  }
+];
+
+const categoryCards = categoryCardInputs.map((card) => {
+  const count = card.category ? getListingsByCategory(card.category).length : null;
+  const statusLabel =
+    card.statusKind === "free" ? "Free listing" : count === 0 ? "Coming soon" : `${count} verified`;
+
+  return {
+    ...card,
+    count,
+    statusLabel
+  };
+});
+---
+
+<section id="browse">
+  <div class="container">
+    <div class="section-heading section-heading-centered">
+      <h2>Browse the guide</h2>
+      <p>Find owner-confirmed local businesses in Sen Monorom.</p>
+    </div>
+
+    <div class="grid category-grid">
+      {
+        categoryCards.map((card) => (
+          <a
+            class={`category-card ${card.count === 0 ? "category-card-empty" : ""}`}
+            href={card.href}
+          >
+            <div>
+              <div class="category-card-header">
+                <h3>{card.title}</h3>
+                <span
+                  class={`category-status ${
+                    card.count === 0 ? "category-status-empty" : ""
+                  } ${card.statusKind === "free" ? "category-status-free" : ""}`}
+                >
+                  {card.statusLabel}
+                </span>
+              </div>
+              <p>{card.description}</p>
+            </div>
+            <span class="card-link">{card.ctaLabel}</span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>

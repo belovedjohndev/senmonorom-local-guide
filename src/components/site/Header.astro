@@ -1,0 +1,60 @@
+---
+type Props = {
+  currentPath: string;
+  siteTitle: string;
+};
+
+const { currentPath, siteTitle } = Astro.props as Props;
+
+const navItems: {
+  href: string;
+  label: string;
+}[] = [
+  { href: "/cafes", label: "Cafes" },
+  { href: "/restaurants", label: "Restaurants" },
+  { href: "/guesthouses", label: "Guesthouses" },
+  { href: "/tours", label: "Tours" },
+  { href: "/motorbike-rentals", label: "Motorbike Rentals" },
+  { href: "/submit-business", label: "Submit Business" }
+];
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="site-brand" href="/" aria-label={siteTitle}>
+      <picture class="site-brand-mark">
+        <source srcset="/brand/logo.webp" type="image/webp" />
+        <img src="/brand/logo.png" alt="" width="44" height="44" />
+      </picture>
+      <span class="site-brand-text">
+        <span class="site-brand-title">Sen Monorom</span>
+        <span class="site-brand-subtitle">Local Guide</span>
+      </span>
+    </a>
+
+    <div class="header-nav-shell">
+      <nav aria-label="Primary navigation" class="site-nav">
+        {
+          navItems.map((item) => {
+            const itemPath = item.href.replace(/\/$/, "") || "/";
+            const isActive = currentPath === itemPath;
+
+            return (
+              <a
+                class={`site-nav-link ${isActive ? "site-nav-link-active" : ""}`}
+                href={item.href}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <span>{item.label}</span>
+              </a>
+            );
+          })
+        }
+      </nav>
+
+      <div class="header-cta-row" aria-label="Primary actions">
+        <a class="button header-cta" href="/submit-business">Submit Business</a>
+      </div>
+    </div>
+  </div>
+</header>
