@@ -3,23 +3,17 @@ const statuses = [
   {
     label: "Verified",
     description: "Owner-confirmed or locally checked.",
-    tone: "verified",
-    icon:
-      '<svg viewBox="0 0 24 24" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>'
+    tone: "verified"
   },
   {
     label: "Being verified",
     description: "Known business, but details are not ready to publish yet.",
-    tone: "pending",
-    icon:
-      '<svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>'
+    tone: "pending"
   },
   {
     label: "Needs update",
     description: "Previously listed but may need refreshed details.",
-    tone: "warning",
-    icon:
-      '<svg viewBox="0 0 24 24" focusable="false"><path d="M12 8v4.5M12 16.5h.01"/><path d="M10.3 4.2 2.8 17.1a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/></svg>'
+    tone: "warning"
   }
 ];
 ---
@@ -34,7 +28,6 @@ const statuses = [
       {
         statuses.map((status) => (
           <article class={`status-card status-card-${status.tone}`}>
-            <span class="status-icon" aria-hidden="true" set:html={status.icon}></span>
             <h3>{status.label}</h3>
             <p>{status.description}</p>
           </article>

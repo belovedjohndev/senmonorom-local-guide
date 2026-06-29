@@ -54,7 +54,66 @@ const navItems: {
 
       <div class="header-cta-row" aria-label="Primary actions">
         <a class="button header-cta" href="/submit-business">Submit Business</a>
+        <button
+          class="header-menu-btn"
+          type="button"
+          aria-label="Open menu"
+          aria-expanded="false"
+          data-header-menu
+        >
+          <svg class="icon-menu" viewBox="0 0 24 24" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          <svg class="icon-close" viewBox="0 0 24 24" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
       </div>
     </div>
   </div>
+
+  <nav class="header-mobile-nav" aria-label="Mobile navigation" data-header-mobile-nav>
+    {
+      navItems.map((item) => {
+        const itemPath = item.href.replace(/\/$/, "") || "/";
+        const isActive = currentPath === itemPath;
+
+        return (
+          <a
+            class={isActive ? "header-mobile-nav-active" : ""}
+            href={item.href}
+            aria-current={isActive ? "page" : undefined}
+          >
+            {item.label}
+          </a>
+        );
+      })
+    }
+    <div class="header-mobile-cta">
+      <a class="button" href="/submit-business">Submit your business</a>
+    </div>
+  </nav>
 </header>
+
+<script is:inline>
+  (() => {
+    const menuBtn = document.querySelector("[data-header-menu]");
+    const mobileNav = document.querySelector("[data-header-mobile-nav]");
+
+    if (!menuBtn || !mobileNav) return;
+
+    menuBtn.addEventListener("click", () => {
+      const isOpen = mobileNav.classList.toggle("is-open");
+      menuBtn.classList.toggle("is-open", isOpen);
+      menuBtn.setAttribute("aria-expanded", String(isOpen));
+      menuBtn.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+      document.body.style.overflow = isOpen ? "hidden" : "";
+    });
+
+    mobileNav.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        mobileNav.classList.remove("is-open");
+        menuBtn.classList.remove("is-open");
+        menuBtn.setAttribute("aria-expanded", "false");
+        menuBtn.setAttribute("aria-label", "Open menu");
+        document.body.style.overflow = "";
+      });
+    });
+  })();
+</script>
