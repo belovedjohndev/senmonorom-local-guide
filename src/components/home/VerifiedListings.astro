@@ -1,7 +1,6 @@
 ---
 import BusinessListingCard from "../BusinessListingCard.astro";
 import {
-  categoryLabels,
   getVerifiedListings,
   type BusinessCategory,
   type BusinessListing
@@ -46,19 +45,6 @@ function getDirectoryGroups(listing: BusinessListing): string[] {
     .filter((filter) => listing.category.some((category) => filter.categories.includes(category)))
     .map((filter) => filter.id);
 }
-
-function getDirectorySearchText(listing: BusinessListing): string {
-  return [
-    listing.name,
-    listing.description,
-    listing.locationLabel,
-    ...listing.category,
-    ...listing.category.map((category) => categoryLabels[category]),
-    ...listing.tags
-  ]
-    .join(" ")
-    .toLowerCase();
-}
 ---
 
 <section id="verified-listings" class="section-muted">
@@ -69,17 +55,6 @@ function getDirectorySearchText(listing: BusinessListing): string {
     </div>
 
     <div class="directory-controls" aria-label="Filter verified listings">
-      <div class="directory-search">
-        <label for="directory-search-input">Search verified places</label>
-        <input
-          id="directory-search-input"
-          type="search"
-          placeholder="Search by name, food, tour, place..."
-          autocomplete="off"
-          data-directory-search
-        />
-      </div>
-
       <div class="directory-filter-row" role="group" aria-label="Listing category filters">
         {
           directoryFiltersWithCounts.map((filter) => (
@@ -110,7 +85,6 @@ function getDirectorySearchText(listing: BusinessListing): string {
             class="directory-listing-item"
             data-directory-item
             data-category-groups={getDirectoryGroups(listing).join(" ")}
-            data-search-text={getDirectorySearchText(listing)}
           >
             <BusinessListingCard listing={listing} headingTag="h3" />
           </div>
@@ -142,13 +116,12 @@ function getDirectorySearchText(listing: BusinessListing): string {
     }
 
     const filterButtons = Array.from(root.querySelectorAll("[data-directory-filter]"));
-    const searchInput = root.querySelector("[data-directory-search]");
     const listingItems = Array.from(root.querySelectorAll("[data-directory-item]"));
     const resultCount = root.querySelector("[data-directory-count]");
     const emptyState = root.querySelector("[data-directory-empty]");
     const validCategories = new Set(["all", "eat", "tours", "stay", "services"]);
 
-    if (!searchInput || !resultCount || !emptyState) {
+    if (!resultCount || !emptyState) {
       return;
     }
 
@@ -158,8 +131,6 @@ function getDirectorySearchText(listing: BusinessListing): string {
     if (!validCategories.has(activeCategory)) {
       activeCategory = "all";
     }
-
-    searchInput.value = url.searchParams.get("q") || "";
 
     function getCountLabel(count) {
       if (count === 0) {
@@ -175,7 +146,6 @@ function getDirectorySearchText(listing: BusinessListing): string {
 
     function updateUrl() {
       const nextUrl = new URL(window.location.href);
-      const query = searchInput.value.trim();
 
       if (activeCategory === "all") {
         nextUrl.searchParams.delete("category");
@@ -183,17 +153,12 @@ function getDirectorySearchText(listing: BusinessListing): string {
         nextUrl.searchParams.set("category", activeCategory);
       }
 
-      if (query) {
-        nextUrl.searchParams.set("q", query);
-      } else {
-        nextUrl.searchParams.delete("q");
-      }
+      nextUrl.searchParams.delete("q");
 
       window.history.replaceState({}, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
     }
 
     function renderDirectory({ syncUrl = true } = {}) {
-      const query = searchInput.value.trim().toLowerCase();
       let visibleCount = 0;
 
       filterButtons.forEach((button) => {
@@ -204,10 +169,8 @@ function getDirectorySearchText(listing: BusinessListing): string {
 
       listingItems.forEach((item) => {
         const groups = (item.dataset.categoryGroups || "").split(/\s+/).filter(Boolean);
-        const searchText = item.dataset.searchText || "";
         const categoryMatches = activeCategory === "all" || groups.includes(activeCategory);
-        const searchMatches = query === "" || searchText.includes(query);
-        const isVisible = categoryMatches && searchMatches;
+        const isVisible = categoryMatches;
 
         item.hidden = !isVisible;
 
@@ -229,10 +192,6 @@ function getDirectorySearchText(listing: BusinessListing): string {
         activeCategory = button.dataset.directoryFilter || "all";
         renderDirectory();
       });
-    });
-
-    searchInput.addEventListener("input", () => {
-      renderDirectory();
     });
 
     renderDirectory({ syncUrl: false });

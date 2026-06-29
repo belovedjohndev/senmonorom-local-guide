@@ -59,10 +59,17 @@ const categoryCards = categoryCardInputs.map((card) => {
   const count = card.category ? getListingsByCategory(card.category).length : null;
   const statusLabel =
     card.statusKind === "free" ? "Free listing" : count === 0 ? "Coming soon" : `${count} verified`;
+  const statusClass =
+    card.statusKind === "free"
+      ? "category-card-action"
+      : count === 0
+        ? "category-card-empty"
+        : "category-card-populated";
 
   return {
     ...card,
     count,
+    statusClass,
     statusLabel
   };
 });
@@ -79,7 +86,7 @@ const categoryCards = categoryCardInputs.map((card) => {
       {
         categoryCards.map((card) => (
           <a
-            class={`category-card ${card.count === 0 ? "category-card-empty" : ""}`}
+            class={`category-card ${card.statusClass}`}
             href={card.href}
           >
             <div>
